@@ -22,8 +22,8 @@ import TrackPlayer, {
     AppKilledPlaybackBehavior,
 } from 'react-native-track-player';
 
-// Default to Android Emulator loopback; can be edited directly in the UI for physical devices
-const DEFAULT_BACKEND_URL = 'http://10.0.2.2:8000';
+// Production Render backend endpoint
+const DEFAULT_BACKEND_URL = 'https://resonate-app-t1t8.onrender.com';
 
 const QUICK_SEARCH_CHIPS = [
     'The Weeknd - Blinding Lights',
@@ -345,7 +345,7 @@ export default function App() {
                                 style={styles.configInput}
                                 value={serverUrl}
                                 onChangeText={setServerUrl}
-                                placeholder="http://10.0.2.2:8000"
+                                placeholder="https://resonate-app-t1t8.onrender.com"
                                 placeholderTextColor="#666"
                                 autoCapitalize="none"
                                 autoCorrect={false}
@@ -374,12 +374,12 @@ export default function App() {
                                 <Text style={styles.healthText}>
                                     {serverHealth === 'online'
                                         ? 'Backend Server Online (200 OK)'
-                                        : 'Cannot reach server. Verify Docker / FastAPI.'}
+                                        : 'Cannot reach server. Verify Render backend status.'}
                                 </Text>
                             </View>
                         )}
                         <Text style={styles.configHelp}>
-                            • Emulator: http://10.0.2.2:8000{'\n'}• Physical Device: http://{'<your-computer-ip>'}:8000
+                            • Cloud Backend: https://resonate-app-t1t8.onrender.com{'\n'}• Local: http://10.0.2.2:8000
                         </Text>
                     </View>
                 )}

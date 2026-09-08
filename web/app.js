@@ -5,7 +5,7 @@
 
 // State Management
 const state = {
-    backendUrl: 'http://127.0.0.1:8000',
+    backendUrl: 'https://resonate-app-t1t8.onrender.com',
     serverOnline: false,
     isPlaying: false,
     currentTrack: {
@@ -217,7 +217,7 @@ async function checkBackendHealth(manualTrigger = false) {
             const data = await res.json();
             state.serverOnline = true;
             elements.serverStatusDot.classList.add('online');
-            elements.serverStatusText.textContent = 'Backend: Online (Port 8000)';
+            elements.serverStatusText.textContent = 'Backend: Online (Render Cloud)';
 
             if (manualTrigger) {
                 elements.connectionFeedback.className = 'connection-feedback success';

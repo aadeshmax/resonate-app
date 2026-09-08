@@ -1,8 +1,7 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 
-// For Android emulator, 'http://10.0.2.2:8000' reaches your local host machine.
-// For physical Android devices on the same Wi-Fi, change to your machine's LAN IP (e.g., 'http://192.168.1.50:8000').
-export const DEFAULT_API_BASE_URL = 'http://10.0.2.2:8000';
+// Production Render backend endpoint
+export const DEFAULT_API_BASE_URL = 'https://resonate-app-t1t8.onrender.com';
 
 export const useMusicIngestion = (apiBaseUrl = DEFAULT_API_BASE_URL) => {
     const [loading, setLoading] = useState(false);
