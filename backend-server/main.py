@@ -11,7 +11,7 @@ from supabase import create_client
 
 app = FastAPI(title="Resonate Music Middleware", version="1.0.0")
 
-# Allow requests from web and mobile apps
+# Allow frontend requests from browser
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
