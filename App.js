@@ -225,7 +225,7 @@ export default function App() {
 
                 const data = await response.json();
 
-                if (data.status === 'ready' || data.status === 'success') {
+                if (data.status === 'ready' || data.status === 'success' || data.status === 'completed') {
                     stopPolling();
                     handleTrackReady(data);
                 } else if (data.status === 'downloading' || data.status === 'queued') {

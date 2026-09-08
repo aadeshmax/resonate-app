@@ -268,7 +268,7 @@ function startSearchAndIngest(query) {
 
             const data = await response.json();
 
-            if (data.status === 'ready' || data.status === 'success') {
+            if (data.status === 'ready' || data.status === 'success' || data.status === 'completed') {
                 stopPolling();
                 setSearchLoading(false);
                 setBannerStatus('ready', 'Track Ready', `"${data.title || data.song?.title || query}" uploaded to Supabase & ready!`);
