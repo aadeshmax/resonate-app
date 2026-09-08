@@ -26,7 +26,7 @@ MUSIC_DIR = os.getenv("MUSIC_DIR", DEFAULT_DIR)
 os.makedirs(MUSIC_DIR, exist_ok=True)
 
 SUPABASE_URL = os.getenv("SUPABASE_URL", "https://ldrqckeoxfwkgxtcgluv.supabase.co")
-SUPABASE_KEY = os.getenv("SUPABASE_KEY", "sb_publishable_81ngKNcEY7y7MjrWp9gb7Q_gf-iMtAP")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxkcnFja2VveGZ3a2d4dGNnbHV2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg4NzI4MzksImV4cCI6MjEwNDQ0ODgzOX0.NK_VerOkxWZCe6qtobNxNFpyPMlMP50HS4UXVoMQ0iM")
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 
