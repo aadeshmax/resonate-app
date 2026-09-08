@@ -248,7 +248,9 @@ function startSearchAndIngest(query) {
     setBannerStatus('searching', 'Searching Library', `Querying Navidrome cloud index for "${query}"...`);
     setSearchLoading(true);
 
+    let isFetching = false;
     const checkJobStatus = async () => {
+        if (isFetching) return;
         state.pollCount += 1;
 
         if (state.pollCount > state.maxPolls) {
@@ -258,9 +260,17 @@ function startSearchAndIngest(query) {
             return;
         }
 
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 120000); // 2 minutes
+
         try {
+            isFetching = true;
             const endpoint = `${state.backendUrl}/api/search-and-ingest?query=${encodeURIComponent(query)}`;
-            const response = await fetch(endpoint, { headers: { 'Accept': 'application/json' } });
+            const response = await fetch(endpoint, {
+                headers: { 'Accept': 'application/json' },
+                signal: controller.signal
+            });
+            clearTimeout(timeoutId);
 
             if (!response.ok) {
                 throw new Error(`Server returned HTTP ${response.status}`);
@@ -283,12 +293,21 @@ function startSearchAndIngest(query) {
                 setBannerStatus('failed', 'Ingestion Failed', data.error || 'The ingestion worker encountered an issue.');
             }
         } catch (err) {
+            clearTimeout(timeoutId);
             console.warn('Ingestion check error:', err);
+            if (err.name === 'AbortError') {
+                stopPolling();
+                setSearchLoading(false);
+                setBannerStatus('failed', 'Request Timeout', 'Server took longer than 2 minutes to respond. Please retry.');
+                return;
+            }
             if (state.pollCount > 3) {
                 stopPolling();
                 setSearchLoading(false);
                 setBannerStatus('failed', 'Connection Failed', `Could not reach ${state.backendUrl}. Verify backend terminal.`);
             }
+        } finally {
+            isFetching = false;
         }
     };
 

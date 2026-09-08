@@ -39,7 +39,9 @@ export const useMusicIngestion = (apiBaseUrl = DEFAULT_API_BASE_URL) => {
         setError(null);
         pollCountRef.current = 0;
 
+        let isPollingInFlight = false;
         const checkStatus = async () => {
+            if (isPollingInFlight) return;
             pollCountRef.current += 1;
 
             if (pollCountRef.current > MAX_POLLS) {
@@ -53,11 +55,17 @@ export const useMusicIngestion = (apiBaseUrl = DEFAULT_API_BASE_URL) => {
                 return;
             }
 
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 120000); // 2 minutes
+
             try {
+                isPollingInFlight = true;
                 const endpoint = `${apiBaseUrl}/api/search-and-ingest?query=${encodeURIComponent(trimmedQuery)}`;
                 const response = await fetch(endpoint, {
                     headers: { 'Accept': 'application/json' },
+                    signal: controller.signal,
                 });
+                clearTimeout(timeoutId);
 
                 if (!response.ok) {
                     throw new Error(`Server returned status ${response.status}`);
@@ -87,7 +95,18 @@ export const useMusicIngestion = (apiBaseUrl = DEFAULT_API_BASE_URL) => {
                     if (onError) onError(failureMsg);
                 }
             } catch (err) {
+                clearTimeout(timeoutId);
                 console.warn('[useMusicIngestion] Polling error:', err.message);
+                if (err.name === 'AbortError') {
+                    stopPolling();
+                    setLoading(false);
+                    setStatus('failed');
+                    const timeoutMsg = 'Request timed out after 2 minutes. Server took too long.';
+                    setStatusMessage(timeoutMsg);
+                    setError(timeoutMsg);
+                    if (onError) onError(timeoutMsg);
+                    return;
+                }
                 // Do not immediately abort on temporary network glitch if polling
                 if (pollCountRef.current > 3) {
                     stopPolling();
@@ -98,6 +117,8 @@ export const useMusicIngestion = (apiBaseUrl = DEFAULT_API_BASE_URL) => {
                     setError(errDetail);
                     if (onError) onError(errDetail);
                 }
+            } finally {
+                isPollingInFlight = false;
             }
         };
 

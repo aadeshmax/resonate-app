@@ -203,7 +203,9 @@ export default function App() {
         setStatus('checking');
         setStatusMessage('Searching Navidrome cloud library...');
 
+        let isPollingInFlight = false;
         const pollBackend = async () => {
+            if (isPollingInFlight) return;
             pollCountRef.current += 1;
 
             if (pollCountRef.current > MAX_POLLS) {
@@ -213,11 +215,17 @@ export default function App() {
                 return;
             }
 
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 120000); // 2 minutes
+
             try {
+                isPollingInFlight = true;
                 const endpoint = `${serverUrl}/api/search-and-ingest?query=${encodeURIComponent(cleanQuery)}`;
                 const response = await fetch(endpoint, {
                     headers: { Accept: 'application/json' },
+                    signal: controller.signal,
                 });
+                clearTimeout(timeoutId);
 
                 if (!response.ok) {
                     throw new Error(`HTTP status ${response.status}`);
@@ -240,11 +248,20 @@ export default function App() {
                     setStatusMessage(data.error || 'Track ingestion failed on server.');
                 }
             } catch (err) {
+                clearTimeout(timeoutId);
+                if (err.name === 'AbortError') {
+                    stopPolling();
+                    setStatus('failed');
+                    setStatusMessage('Request timed out after 2 minutes. Server took too long.');
+                    return;
+                }
                 if (pollCountRef.current > 3) {
                     stopPolling();
                     setStatus('failed');
                     setStatusMessage(`Unable to connect to ${serverUrl}. Ensure backend is running.`);
                 }
+            } finally {
+                isPollingInFlight = false;
             }
         };
 
