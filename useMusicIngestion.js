@@ -65,7 +65,7 @@ export const useMusicIngestion = (apiBaseUrl = DEFAULT_API_BASE_URL) => {
 
                 const data = await response.json();
 
-                if (data.status === 'ready') {
+                if (data.status === 'ready' || data.status === 'success') {
                     stopPolling();
                     setLoading(false);
                     setStatus('ready');

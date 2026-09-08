@@ -268,10 +268,10 @@ function startSearchAndIngest(query) {
 
             const data = await response.json();
 
-            if (data.status === 'ready') {
+            if (data.status === 'ready' || data.status === 'success') {
                 stopPolling();
                 setSearchLoading(false);
-                setBannerStatus('ready', 'Track Ready', `"${data.song?.title || query}" is synced and ready to stream!`);
+                setBannerStatus('ready', 'Track Ready', `"${data.title || data.song?.title || query}" uploaded to Supabase & ready!`);
                 loadReadyTrack(data, query);
             } else if (data.status === 'downloading' || data.status === 'queued') {
                 setBannerStatus('downloading', 'Downloading Track', 'Track not in cloud library. Invoking spotDL backend worker...');
