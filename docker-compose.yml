@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  navidrome:
+    image: deluan/navidrome:latest
+    container_name: navidrome
+    restart: unless-stopped
+    ports:
+      - "4533:4533"
+    environment:
+      # We trigger scans on-demand via the Subsonic API after spotDL completes
+      ND_SCANSCHEDULE: "0"
+      ND_LOGLEVEL: "info"
+    volumes:
+      - ./data/navidrome:/data
+      - shared-music:/music:ro
+
+  backend-middleware:
+    build:
+      context: ./backend-server
+      dockerfile: Dockerfile
+    container_name: music-middleware
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      NAVIDROME_URL: "http://navidrome:4533"
+      SUBSONIC_USER: "admin"
+      SUBSONIC_PASS: "admin_password"
+      MUSIC_DIR: "/shared-music"
+    volumes:
+      - shared-music:/shared-music:rw
+    depends_on:
+      - navidrome
+
+volumes:
+  shared-music:
+    driver: local

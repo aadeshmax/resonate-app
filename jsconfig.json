@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "target": "es2020",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "jsx": "react-native",
+    "allowJs": true,
+    "checkJs": false,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "strict": false
+  },
+  "include": [
+    "App.js",
+    "index.js",
+    "service.js",
+    "TrackPlayerService.js",
+    "useMusicIngestion.js"
+  ],
+  "exclude": [
+    "node_modules",
+    "backend-server"
+  ]
+}

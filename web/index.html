@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resonate — Cloud Audio & Stream Engine</title>
+    <meta name="description" content="Resonate is a next-generation music player and cloud stream ingestion interface with live audio visualization and seamless Navidrome integration.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Background Ambient Mesh -->
+    <div class="ambient-glow glow-primary"></div>
+    <div class="ambient-glow glow-secondary"></div>
+    <div class="ambient-glow glow-tertiary"></div>
+
+    <div class="app-layout">
+        <!-- Top Navigation Bar -->
+        <header class="navbar">
+            <div class="brand-container">
+                <div class="brand-logo-mark">
+                    <div class="soundwave-icon">
+                        <span></span><span></span><span></span><span></span>
+                    </div>
+                </div>
+                <div class="brand-text">
+                    <div class="brand-badge-row">
+                        <span class="badge-label">RESONATE</span>
+                        <span class="badge-separator">•</span>
+                        <span class="badge-sub">MUSIC ENGINE</span>
+                    </div>
+                    <h1 class="brand-title">Resonate</h1>
+                </div>
+            </div>
+
+            <div class="nav-actions">
+                <div class="server-status-pill" id="serverStatusPill" title="Click to configure backend connection">
+                    <span class="status-indicator-dot" id="serverStatusDot"></span>
+                    <span class="status-indicator-text" id="serverStatusText">Backend: Checking...</span>
+                </div>
+
+                <button class="icon-button" id="configToggleBtn" title="Backend Configuration" aria-label="Backend Configuration">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- Collapsible Configuration Panel -->
+        <div class="config-drawer" id="configDrawer">
+            <div class="config-card">
+                <div class="config-header">
+                    <h3>Backend Ingestion Server</h3>
+                    <button class="close-btn" id="configCloseBtn">&times;</button>
+                </div>
+                <p class="config-desc">Connects to your local FastAPI middleware to query Navidrome &amp; trigger on-demand Spotify downloads via spotDL.</p>
+                <div class="config-input-group">
+                    <input type="text" id="backendUrlInput" value="http://127.0.0.1:8000" placeholder="http://127.0.0.1:8000" spellcheck="false" autocomplete="off">
+                    <button class="btn btn-secondary" id="testConnectionBtn">Test Link</button>
+                </div>
+                <div class="connection-feedback" id="connectionFeedback"></div>
+            </div>
+        </div>
+
+        <!-- Main Workspace -->
+        <main class="main-container">
+            <!-- Search & Ingest Section -->
+            <section class="search-section">
+                <form id="searchForm" class="search-form" onsubmit="return false;">
+                    <div class="search-input-wrapper">
+                        <span class="search-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                        </span>
+                        <input type="text" id="searchInput" placeholder="Search track, artist, or paste a Spotify link..." autocomplete="off" spellcheck="false">
+                        <button type="button" class="btn-clear hidden" id="clearInputBtn">&times;</button>
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="searchSubmitBtn">
+                        <span class="btn-text">Ingest &amp; Play</span>
+                        <span class="btn-loader hidden"></span>
+                    </button>
+                </form>
+
+                <!-- Instant Suggestion Chips -->
+                <div class="suggestion-chips" id="suggestionChips">
+                    <span class="chips-label">Quick Suggestions:</span>
+                    <div class="chips-list">
+                        <button class="chip" data-query="The Weeknd - Blinding Lights">The Weeknd - Blinding Lights</button>
+                        <button class="chip" data-query="Daft Punk - Get Lucky">Daft Punk - Get Lucky</button>
+                        <button class="chip" data-query="Queen - Bohemian Rhapsody">Queen - Bohemian Rhapsody</button>
+                        <button class="chip" data-query="Dua Lipa - Levitating">Dua Lipa - Levitating</button>
+                    </div>
+                </div>
+
+                <!-- Status Activity Banner -->
+                <div class="status-banner" id="statusBanner">
+                    <div class="status-indicator">
+                        <span class="status-pulse-dot" id="statusPulseDot"></span>
+                    </div>
+                    <div class="status-content">
+                        <div class="status-title-row">
+                            <span class="status-state-badge" id="statusStateBadge">STANDBY</span>
+                            <span class="status-time" id="statusTime">Ready</span>
+                        </div>
+                        <p class="status-detail" id="statusDetail">Enter a track name or Spotify link to trigger instant cloud search &amp; ingestion.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Interactive Player Showcase -->
+            <section class="player-showcase">
+                <div class="turntable-container">
+                    <!-- Dynamic Vinyl Record -->
+                    <div class="vinyl-platter" id="vinylPlatter">
+                        <div class="vinyl-glow-aura" id="vinylAura"></div>
+                        <div class="vinyl-disc" id="vinylDisc">
+                            <div class="vinyl-groove groove-1"></div>
+                            <div class="vinyl-groove groove-2"></div>
+                            <div class="vinyl-groove groove-3"></div>
+                            <div class="vinyl-label">
+                                <img id="albumArtImg" src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=500&auto=format&fit=crop&q=80" alt="Album Cover">
+                                <div class="vinyl-center-hole"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Track Information & Visualizer -->
+                    <div class="track-details">
+                        <div class="track-meta">
+                            <span class="track-badge" id="trackCodecBadge">LOSSLESS FLAC / 320K</span>
+                            <h2 class="track-title" id="trackTitle">Resonate Ambient Flow</h2>
+                            <h3 class="track-artist" id="trackArtist">Resonate Audio Engine</h3>
+                        </div>
+
+                        <!-- Equalizer Spectrum Visualizer -->
+                        <div class="equalizer-wrapper">
+                            <div class="equalizer-bars" id="equalizerBars">
+                                <!-- 16 animated dynamic spectrum bars -->
+                                <span class="eq-bar"></span><span class="eq-bar"></span><span class="eq-bar"></span><span class="eq-bar"></span>
+                                <span class="eq-bar"></span><span class="eq-bar"></span><span class="eq-bar"></span><span class="eq-bar"></span>
+                                <span class="eq-bar"></span><span class="eq-bar"></span><span class="eq-bar"></span><span class="eq-bar"></span>
+                                <span class="eq-bar"></span><span class="eq-bar"></span><span class="eq-bar"></span><span class="eq-bar"></span>
+                            </div>
+                        </div>
+
+                        <!-- Progress Bar & Timestamps -->
+                        <div class="progress-section">
+                            <div class="progress-bar-track" id="progressBarTrack">
+                                <div class="progress-bar-fill" id="progressBarFill"></div>
+                                <div class="progress-handle" id="progressHandle"></div>
+                            </div>
+                            <div class="time-row">
+                                <span id="timeCurrent">0:00</span>
+                                <span id="timeTotal">3:30</span>
+                            </div>
+                        </div>
+
+                        <!-- Master Playback Controls -->
+                        <div class="player-controls">
+                            <button class="ctrl-btn ctrl-secondary" id="skipBackBtn" title="Rewind 10s">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polygon points="11 19 2 12 11 5 11 19"></polygon>
+                                    <polygon points="22 19 13 12 22 5 22 19"></polygon>
+                                </svg>
+                            </button>
+
+                            <button class="ctrl-btn ctrl-primary" id="playPauseBtn" title="Play / Pause">
+                                <svg class="icon-play" id="iconPlay" width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                                </svg>
+                                <svg class="icon-pause hidden" id="iconPause" width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                                    <rect x="6" y="4" width="4" height="16"></rect>
+                                    <rect x="14" y="4" width="4" height="16"></rect>
+                                </svg>
+                            </button>
+
+                            <button class="ctrl-btn ctrl-secondary" id="skipFwdBtn" title="Forward 10s">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polygon points="13 19 22 12 13 5 13 19"></polygon>
+                                    <polygon points="2 19 11 12 2 5 2 19"></polygon>
+                                </svg>
+                            </button>
+
+                            <!-- Volume Control -->
+                            <div class="volume-container">
+                                <button class="ctrl-btn ctrl-secondary" id="volumeBtn" title="Mute/Unmute">
+                                    <svg id="volumeIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                                        <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                                    </svg>
+                                </button>
+                                <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.85" class="volume-slider">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Hidden Audio Element -->
+        <audio id="audioEngine" preload="metadata"></audio>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Resonate Audio Engine • Synchronized with Navidrome Cloud &amp; spotDL</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

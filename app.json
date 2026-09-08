@@ -1,0 +1,49 @@
+{
+  "name": "main",
+  "displayName": "Resonate",
+  "expo": {
+    "name": "Resonate",
+    "slug": "resonate",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.resonate.app",
+      "infoPlist": {
+        "UIBackgroundModes": [
+          "audio"
+        ]
+      }
+    },
+    "android": {
+      "package": "com.resonate.app",
+      "permissions": [
+        "android.permission.INTERNET",
+        "android.permission.WAKE_LOCK",
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"
+      ]
+    },
+    "plugins": [
+      [
+        "react-native-track-player",
+        {
+          "capabilities": [
+            "play",
+            "pause",
+            "stop",
+            "seek",
+            "skip-to-next",
+            "skip-to-previous"
+          ]
+        }
+      ]
+    ]
+  },
+  "react-native-track-player": {
+    "android": {
+      "appKilledPlaybackBehavior": "stop-playback-and-remove-notification"
+    }
+  }
+}
