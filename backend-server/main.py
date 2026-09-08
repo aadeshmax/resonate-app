@@ -48,14 +48,19 @@ async def process_ingestion(query: str):
         try:
             print(f"[Ingest] Starting async download for: {clean_query}")
 
-            # Non-blocking subprocess execution with fast stream extraction
-            proc = await asyncio.create_subprocess_exec(
+            # Explicitly force output format and output directory template
+            cmd = [
                 "spotdl",
                 "download",
                 clean_query,
                 "--format", "m4a",
                 "--bitrate", "disable",
                 "--threads", "1",
+                "--output", f"{MUSIC_DIR}/{{artist}} - {{title}}.{{output-ext}}"
+            ]
+
+            proc = await asyncio.create_subprocess_exec(
+                *cmd,
                 cwd=MUSIC_DIR,
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE
@@ -63,16 +68,27 @@ async def process_ingestion(query: str):
 
             stdout, stderr = await proc.communicate()
 
-            if proc.returncode != 0:
-                err = stderr.decode(errors="replace") if stderr else "Unknown spotDL error"
-                print(f"[spotDL error]: {err}")
-                raise HTTPException(status_code=500, detail=f"spotDL failed: {err}")
+            out_str = stdout.decode(errors="replace") if stdout else ""
+            err_str = stderr.decode(errors="replace") if stderr else ""
+            print(f"[spotDL STDOUT]: {out_str}")
+            if err_str:
+                print(f"[spotDL STDERR]: {err_str}")
 
-            # Locate downloaded audio file
-            files = glob.glob(os.path.join(MUSIC_DIR, "*.*"))
-            audio_files = [f for f in files if f.lower().endswith((".m4a", ".mp3", ".opus", ".flac", ".ogg"))]
+            if proc.returncode != 0:
+                print(f"[spotDL error]: {err_str}")
+                raise HTTPException(status_code=500, detail=f"spotDL failed: {err_str}")
+
+            # Search /tmp/music recursively
+            files = glob.glob(os.path.join(MUSIC_DIR, "**/*.*"), recursive=True)
+            audio_files = [f for f in files if f.lower().endswith((".m4a", ".mp3", ".opus", ".flac", ".ogg", ".webm"))]
+
+            print(f"[Debug] Files detected in {MUSIC_DIR}: {files}")
+
             if not audio_files:
-                raise HTTPException(status_code=500, detail="Audio file not found after download.")
+                raise HTTPException(
+                    status_code=500,
+                    detail=f"spotDL completed but produced no audio file. Log: {out_str[-200:]}"
+                )
 
             latest_file = max(audio_files, key=os.path.getctime)
             filename = os.path.basename(latest_file)
