@@ -1,19 +1,9 @@
 FROM python:3.11-slim
 
-# Install ffmpeg (required by spotDL for audio conversion and tagging)
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    ffmpeg \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
-
 WORKDIR /app
 
-# Install spotdl, fastapi, uvicorn, requests
-RUN pip install --no-cache-dir \
-    spotdl \
-    fastapi \
-    uvicorn \
-    requests
+COPY requirements.txt /app/requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 COPY main.py /app/main.py
 
