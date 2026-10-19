@@ -1,0 +1,52 @@
+diff --git a/node_modules/react-native-track-player/android/src/main/java/com/doublesymmetry/trackplayer/module/MusicModule.kt b/node_modules/react-native-track-player/android/src/main/java/com/doublesymmetry/trackplayer/module/MusicModule.kt
+index b2409a0..ab8f0e2 100644
+--- a/node_modules/react-native-track-player/android/src/main/java/com/doublesymmetry/trackplayer/module/MusicModule.kt
++++ b/node_modules/react-native-track-player/android/src/main/java/com/doublesymmetry/trackplayer/module/MusicModule.kt
+@@ -179,7 +179,7 @@ class MusicModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaM
+         }
+ 
+         // Validate buffer keys.
+-        val bundledData = Arguments.toBundle(data)
++        val bundledData = ( ?: android.os.Bundle())
+         val minBuffer =
+             bundledData?.getDouble(MusicService.MIN_BUFFER_KEY)?.toMilliseconds()?.toInt()
+                 ?: DEFAULT_MIN_BUFFER_MS
+@@ -254,7 +254,7 @@ class MusicModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaM
+     fun updateOptions(data: ReadableMap?, callback: Promise) = scope.launch {
+         if (verifyServiceBoundOrReject(callback)) return@launch
+ 
+-        val options = Arguments.toBundle(data)
++        val options = ( ?: android.os.Bundle())
+ 
+         options?.let {
+             musicService.updateOptions(it)
+@@ -291,9 +291,9 @@ class MusicModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaM
+             callback.resolve(null)
+             return@launch
+         }
+-        val bundle = Arguments.toBundle(data);
++         ?: android.os.Bundle();
+         if (bundle is Bundle) {
+-            musicService.load(bundleToTrack(bundle))
++            musicService.load(bundleToTrack(bundle ?: android.os.Bundle()))
+             callback.resolve(null)
+         } else {
+             callback.reject("invalid_track_object", "Track was not a dictionary type")
+@@ -340,7 +340,7 @@ class MusicModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaM
+             } else {
+                 val context: ReactContext = context
+                 val track = musicService.tracks[index]
+-                track.setMetadata(context, Arguments.toBundle(map), musicService.ratingType)
++                track.setMetadata(context, ( ?: android.os.Bundle()), musicService.ratingType)
+                 musicService.updateMetadataForTrack(index, track)
+ 
+                 callback.resolve(null)
+@@ -355,7 +355,7 @@ class MusicModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaM
+             callback.reject("no_current_item", "There is no current item in the player")
+ 
+         val context: ReactContext = context
+-        Arguments.toBundle(map)?.let {
++        ( ?: android.os.Bundle())?.let {
+             val track = bundleToTrack(it)
+             musicService.updateNowPlayingMetadata(track)
+         }
