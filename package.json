@@ -5,8 +5,7 @@
   "scripts": {
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "start": "react-native start",
-    "postinstall": "patch-package"
+    "start": "react-native start"
   },
   "dependencies": {
     "expo": "^58.0.14",
