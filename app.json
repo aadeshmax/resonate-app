@@ -1,12 +1,18 @@
 {
-  "name": "main",
-  "displayName": "Resonate",
   "expo": {
     "name": "Resonate",
     "slug": "resonate",
+    "scheme": "resonate",
     "version": "1.0.0",
     "orientation": "portrait",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
+    "newArchEnabled": false,
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#222327"
+    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.resonate.app",
@@ -18,6 +24,11 @@
     },
     "android": {
       "package": "com.resonate.app",
+      "newArchEnabled": false,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#222327"
+      },
       "permissions": [
         "android.permission.INTERNET",
         "android.permission.WAKE_LOCK",
@@ -25,25 +36,13 @@
         "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"
       ]
     },
+    "extra": {
+      "eas": {
+        "projectId": "23d19491-d868-4301-bff5-ebdca4c8ab54"
+      }
+    },
     "plugins": [
-      [
-        "react-native-track-player",
-        {
-          "capabilities": [
-            "play",
-            "pause",
-            "stop",
-            "seek",
-            "skip-to-next",
-            "skip-to-previous"
-          ]
-        }
-      ]
+      "./disable-new-arch-plugin.js"
     ]
-  },
-  "react-native-track-player": {
-    "android": {
-      "appKilledPlaybackBehavior": "stop-playback-and-remove-notification"
-    }
   }
 }
