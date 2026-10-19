@@ -1,8 +1,18 @@
 diff --git a/node_modules/react-native-track-player/android/src/main/java/com/doublesymmetry/trackplayer/module/MusicModule.kt b/node_modules/react-native-track-player/android/src/main/java/com/doublesymmetry/trackplayer/module/MusicModule.kt
-index b2409a0..ab8f0e2 100644
+index b2409a0..4b4442f 100644
 --- a/node_modules/react-native-track-player/android/src/main/java/com/doublesymmetry/trackplayer/module/MusicModule.kt
 +++ b/node_modules/react-native-track-player/android/src/main/java/com/doublesymmetry/trackplayer/module/MusicModule.kt
-@@ -179,7 +179,7 @@ class MusicModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaM
+@@ -86,7 +86,8 @@ class MusicModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaM
+         return false
+     }
+ 
+-    private fun bundleToTrack(bundle: Bundle): Track {
++    private fun bundleToTrack(bundle: Bundle?): Track? {
++        if (bundle == null) return null
+         return Track(context, bundle, musicService.ratingType)
+     }
+ 
+@@ -179,7 +180,7 @@ class MusicModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaM
          }
  
          // Validate buffer keys.
@@ -11,7 +21,7 @@ index b2409a0..ab8f0e2 100644
          val minBuffer =
              bundledData?.getDouble(MusicService.MIN_BUFFER_KEY)?.toMilliseconds()?.toInt()
                  ?: DEFAULT_MIN_BUFFER_MS
-@@ -254,7 +254,7 @@ class MusicModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaM
+@@ -254,7 +255,7 @@ class MusicModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaM
      fun updateOptions(data: ReadableMap?, callback: Promise) = scope.launch {
          if (verifyServiceBoundOrReject(callback)) return@launch
  
@@ -20,19 +30,16 @@ index b2409a0..ab8f0e2 100644
  
          options?.let {
              musicService.updateOptions(it)
-@@ -291,9 +291,9 @@ class MusicModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaM
+@@ -291,7 +292,7 @@ class MusicModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaM
              callback.resolve(null)
              return@launch
          }
 -        val bundle = Arguments.toBundle(data);
 +         ?: android.os.Bundle();
          if (bundle is Bundle) {
--            musicService.load(bundleToTrack(bundle))
-+            musicService.load(bundleToTrack(bundle ?: android.os.Bundle()))
+             musicService.load(bundleToTrack(bundle))
              callback.resolve(null)
-         } else {
-             callback.reject("invalid_track_object", "Track was not a dictionary type")
-@@ -340,7 +340,7 @@ class MusicModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaM
+@@ -340,7 +341,7 @@ class MusicModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaM
              } else {
                  val context: ReactContext = context
                  val track = musicService.tracks[index]
@@ -41,7 +48,7 @@ index b2409a0..ab8f0e2 100644
                  musicService.updateMetadataForTrack(index, track)
  
                  callback.resolve(null)
-@@ -355,7 +355,7 @@ class MusicModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaM
+@@ -355,7 +356,7 @@ class MusicModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaM
              callback.reject("no_current_item", "There is no current item in the player")
  
          val context: ReactContext = context
@@ -49,4 +56,13 @@ index b2409a0..ab8f0e2 100644
 +        ( ?: android.os.Bundle())?.let {
              val track = bundleToTrack(it)
              musicService.updateNowPlayingMetadata(track)
+         }
+@@ -545,7 +546,7 @@ class MusicModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaM
+         if (verifyServiceBoundOrReject(callback)) return@launch
+ 
+         if (index >= 0 && index < musicService.tracks.size) {
+-            callback.resolve(Arguments.fromBundle(musicService.tracks[index].originalItem))
++            callback.resolve(Arguments.fromBundle( ?: android.os.Bundle()))
+         } else {
+             callback.resolve(null)
          }
