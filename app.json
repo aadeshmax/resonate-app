@@ -37,10 +37,13 @@
       ]
     },
     "extra": {
-      "eas": {}
+      "eas": {
+        "projectId": "23d19491-d868-4301-bff5-ebdca4c8ab54"
+      }
     },
     "plugins": [
       "./disable-new-arch-plugin.js"
-    ]
+    ],
+    "owner": "aadesh_max"
   }
 }
